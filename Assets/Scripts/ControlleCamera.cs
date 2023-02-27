@@ -21,6 +21,9 @@ public class ControlleCamera : MonoBehaviour
     private string pegarL = "Pressione (E) para pegar.";
     bool pertoPorta;
 
+    AudioSource audio;
+    [SerializeField]AudioClip Monster;
+
     private bool estaNoChao;
     [SerializeField] private Transform veficadorChao;
     [SerializeField] private LayerMask cenarioMask;
@@ -60,6 +63,7 @@ public class ControlleCamera : MonoBehaviour
         lamps = FindObjectOfType<ControllerLamps>();
         playTimeline= GetComponent<PlayableDirector>();
         cinemachine = GetComponent<CinemachineVirtualCamera>();
+        audio = GetComponent<AudioSource>();
         
         
       
@@ -192,6 +196,8 @@ public class ControlleCamera : MonoBehaviour
 
         public void CallMonster()
     {
+        audio.clip = Monster;
+        audio.Play();
         if (OnTimeline != null)
         {
             OnTimeline();

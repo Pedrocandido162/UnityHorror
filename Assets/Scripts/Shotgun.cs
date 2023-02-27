@@ -19,6 +19,10 @@ public class Shotgun : MonoBehaviour
     int Mag;
     int difençaBullet;
 
+    //Eventos
+    public delegate void Step();
+    public static event Step OnShoot;
+
     //Animator
     private Animator animator;
 
@@ -73,6 +77,10 @@ public class Shotgun : MonoBehaviour
         bullet--;
         dialogueControl.GetBullets(bullet, Mag);
         particleShoot.SetActive(true);
+        if (OnShoot != null)
+        {
+            OnShoot();
+        }
     }
     public void ShootFalse()
     {

@@ -13,6 +13,9 @@ public class Monster_scavenger : MonoBehaviour
     private NavMeshAgent Nav;
     bool timeFim=false;
 
+    int Life = 600;
+    bool Vivo = true;
+
 
 
 
@@ -23,16 +26,28 @@ public class Monster_scavenger : MonoBehaviour
         animator = GetComponent<Animator>();
         Nav= GetComponent<NavMeshAgent>();
         ControlleCamera.OnTimeline+=Move;
+
+        SpawnBullets.OnAtingir += Atingido;
+
         
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (timeFim)
+        if (timeFim && Vivo)
         {
             Nav.SetDestination(Player.position);
+        }else if (!Vivo)
+        {
+            Nav.SetDestination(transform.position);
         }
+        if (Life <= 0)
+        {
+            Vivo= false;
+            Death();
+        }
+        
     }
     void Attack()
     {
@@ -43,6 +58,15 @@ public class Monster_scavenger : MonoBehaviour
     {
         timeFim = true;
         animator.SetBool("Walk", true);
+    }
+    void Atingido()
+    {
+        Life -= 15;
+        Debug.Log("Foi atingido.");
+    }
+    void Death()
+    {
+        animator.SetBool("isDeath", true);
     }
 
 
