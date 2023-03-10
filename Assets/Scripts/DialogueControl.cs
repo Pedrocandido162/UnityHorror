@@ -1,6 +1,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.Remoting.Messaging;
+using Unity.Mathematics;
+
 using UnityEngine;
 using UnityEngine.UI;
 public class DialogueControl : MonoBehaviour
@@ -14,11 +17,20 @@ public class DialogueControl : MonoBehaviour
 
     [Header("Dialogos")]
     public string[] falaPerson;
-    public string actorName = "SGT.Candido";
+    private string actorName = "SGT.Candido";
     private int contadorSpeech = 0;
-    
+
+    [Header("Barra Vida")]
+    public Image image;
+    private float vida = 20;
+    public float vidaMax = 20;
+    public float Vida { get { return vida; } set { vida = Mathf.Clamp(value, 0, vidaMax); } }
     //Scripts
     private ControllerLamps lamps;
+
+    [SerializeField] GameObject Pause;
+    [SerializeField] Text textMorreu;
+    bool PauseDetector= false;
 
     [Header("Munição")]
     public Text Amunnation;
@@ -31,8 +43,15 @@ public class DialogueControl : MonoBehaviour
     private string[] setences;
 
 
+    private void Awake()
+    {
+        Cursor.visible = false;
+        Time.timeScale = 1;
+        
+    }
     private void Start()
     {
+        Monster_scavenger.OnDeath += Death;
         lamps = FindObjectOfType<ControllerLamps>();
         falaPerson = new string[10];
         falaPerson[0] = "Esta tudo escuro aqui...";
@@ -47,10 +66,30 @@ public class DialogueControl : MonoBehaviour
 
     private void Update()
     {
+        image.fillAmount = Vida / vidaMax;
+        if (Vida <= 0)
+        {
+            Death("Player");
+        }
+        else
+        {
+            if (Input.GetKeyDown(KeyCode.Escape) && !PauseDetector)
+            {
+                PauseGame();
+            }
+            else if (Input.GetKeyDown(KeyCode.Escape) && PauseDetector)
+            {
+                OffPause();
+            }
+        }
+        if (!PauseDetector)
+        {
+            Cursor.visible = false;
+        }
         BulletsText = Convert.ToString(Bullets);
         BulletMagText = Convert.ToString(BulletMag);
         Amunnation.text = (BulletsText+"/"+BulletMagText);
-        if (Input.GetKeyDown(KeyCode.X) && falaPerson[contadorSpeech] != null)
+        if (Input.GetKeyDown(KeyCode.Return) && falaPerson[contadorSpeech] != null)
         {
             contadorSpeech += 1;
             Speech(falaPerson[contadorSpeech], actorName);
@@ -65,6 +104,7 @@ public class DialogueControl : MonoBehaviour
             }
 
         }
+       
     }
     public void Speech(string txt,string actorname)
     {
@@ -100,6 +140,52 @@ public class DialogueControl : MonoBehaviour
     {
         return falaPerson[contadorSpeech];
     }
+    public void VillainAttack(float danoRecebido)
+    {
+        Vida -= danoRecebido;
+    }
+    private void PauseGame()
+    {
+        Time.timeScale = 0;
+        Cursor.visible = true; 
+        Pause.SetActive(true);
+        PauseDetector = true;
+    }
+    private void OffPause()
+    {
+        Time.timeScale = 1;
+        Cursor.visible = false;
+        Pause.SetActive(false);
+        PauseDetector= false;
+    }
+    private void Death(string Quem)
+    {
+        Time.timeScale = 0;
+        Cursor.visible = true;
+        Pause.SetActive(true);
+        switch (Quem)
+        {
+            case "Player":
+                textMorreu.text = "Você Morreu!!";
+                break;
+            case "Vilao":
+                textMorreu.text = "Você ganhou!!";
+                break;
+        }
+        
     
-   
+    }
+  
+
+    [Obsolete]
+    public void ButtonRestart()
+    {
+        Application.LoadLevel(Application.loadedLevel);
+    }
+   public void ButtonSair()
+    {
+        Application.Quit(); 
+    }
+
+
 }

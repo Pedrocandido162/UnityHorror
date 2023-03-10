@@ -21,7 +21,7 @@ public class SpawnBullets : MonoBehaviour
     }
 
    
-    
+
     public void Shoot()
     {
         RaycastHit Hit = new RaycastHit();

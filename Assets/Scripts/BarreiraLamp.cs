@@ -24,7 +24,7 @@ public class BarreiraLamp : MonoBehaviour
         if (collision.gameObject.CompareTag("Player"))
         {
             dc.Speech("Ta muito escuro. Não dá pra ir sem lanterna.", "SGT.Candido");
-            Debug.Log("Conseguiu");
+           
 
         }
     }

@@ -1,6 +1,7 @@
 using Cinemachine;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
 using UnityEngine;
 using UnityEngine.Playables;
 using UnityEngine.PlayerLoop;
@@ -23,6 +24,7 @@ public class ControlleCamera : MonoBehaviour
 
     AudioSource audio;
     [SerializeField]AudioClip Monster;
+    [SerializeField] GameObject TimeBarre;
 
     private bool estaNoChao;
     [SerializeField] private Transform veficadorChao;
@@ -30,7 +32,7 @@ public class ControlleCamera : MonoBehaviour
     [SerializeField] private float alturaDoSalto = 1f;
     private float gravidade = -9.81f;
     private float velocidadeVertical;
-
+    
     [SerializeField] GameObject barreira;
 
     private PlayableDirector playTimeline;
@@ -46,6 +48,7 @@ public class ControlleCamera : MonoBehaviour
 
 
     [Header("Objetos")]
+    [SerializeField] Transform shotgun;
     public string[] Tags;
     public GameObject ObjSegurando;
     [Space(20)]
@@ -87,7 +90,7 @@ public class ControlleCamera : MonoBehaviour
         if (Segurando == false)
         {
             RaycastHit Hit = new RaycastHit();
-            if (Physics.Raycast(transform.position, transform.forward, out Hit, DistanciaMax, Layoso, QueryTriggerInteraction.Ignore))
+            if (Physics.Raycast(shotgun.transform.position, shotgun.transform.forward, out Hit, DistanciaMax, Layoso, QueryTriggerInteraction.Ignore))
             {
                 Debug.DrawLine(transform.position, Hit.point, Color.green);
 
@@ -115,14 +118,15 @@ public class ControlleCamera : MonoBehaviour
                             return;
                         }
                     }
-                    
-                   
+                    else
+                    {
+                        dc.Comandos("");
+                    }
+
+
                 }
             }
-            else
-            {
-                dc.Comandos(null);
-            }
+            
 
         }
     }
@@ -156,7 +160,7 @@ public class ControlleCamera : MonoBehaviour
         }
         if (myCamera.transform.rotation.x > 0)
         {
-            transform.eulerAngles = new Vector3(myCamera.transform.eulerAngles.x, myCamera.eulerAngles.y,
+            transform.eulerAngles = new Vector3(0, myCamera.eulerAngles.y,
         myCamera.transform.eulerAngles.z);
         }
         else
@@ -198,6 +202,7 @@ public class ControlleCamera : MonoBehaviour
     {
         audio.clip = Monster;
         audio.Play();
+        TimeBarre.SetActive(true);
         if (OnTimeline != null)
         {
             OnTimeline();
